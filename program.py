@@ -16,6 +16,8 @@ Selecione um cliente pelo número, na lista abaixo
 {clients_texted}
 +---+------------------------------------------------
     """)
+    if clients_texted == '':
+        return print('Não há pastas neste diretorio')
     return clients_dict
 
 def rename_alias(verify=True):
@@ -46,7 +48,8 @@ def set_folder():
         selected_client = input("Selecione o número correspondente ao cliente desejado: ")
         if clients_dict.get(int(selected_client)) != None:
             print(f"\nVocê selecionou o cliente : {clients_dict.get(int(selected_client))}")
-            break
+        break
+        
     job_num = input("\nInsira o número do job: ").replace(' ' , '')
     job_name = input("\nInsira o nome do job: ").replace(' ' , '').lower()
     while True:
