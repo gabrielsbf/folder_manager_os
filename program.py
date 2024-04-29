@@ -24,8 +24,7 @@ def prompt_clients(list_clients_b=True):
     """
     list_clients = os.listdir(path.PATTERN_PATH) if list_clients_b == True else list_clients_b 
     if list_clients == []:
-        create_folder()
-        return prompt_clients()
+        return create_folder()
     clients_dict ={list_clients.index(i) + 1 : i for i in list_clients} 
     clients_texted = '      \n+---+------------------------------------------------\n'.join(['| ' 
                                                             + str(list(clients_dict.keys())[i]) 
@@ -44,6 +43,7 @@ def create_folder():
     path_clients = os.path.join(path.PATTERN_PATH, name)
     os.mkdir(path_clients)
     print("Novo cliente Adicionado!")
+    
     
 def rename_alias(verify=True):
     alias = read_file("client_alias.json")
@@ -65,14 +65,25 @@ def rename_alias(verify=True):
         update_file(app_obj, 'client_alias.json')
 
 
+def get_client_alias(client):
+    alias_file = read_file('client_alias.json')
+    alias = alias_file.get(client)
+    if alias != None:
+        return alias
+    else:
+        rename_alias(False)
+
+
 def set_folder():
     """a function that recognizes the inputs given and creates a folder on the specified path
     """
     clients_dict = prompt_clients()
+    rename_alias()
     while True:
         selected_client = input("Selecione o número correspondente ao cliente desejado: ")
-        if clients_dict.get(int(selected_client)) != None:
-            print(f"\nVocê selecionou o cliente : {clients_dict.get(int(selected_client))}")
+        selected_client_name = clients_dict.get(int(selected_client))
+        if selected_client_name != None:
+            print(f"\nVocê selecionou o cliente : {selected_client_name}")
         break
         
     job_num = input("\nInsira o número do job: ").replace(' ' , '')
@@ -94,8 +105,8 @@ APERTE 'ENTER' SE SIM | ou digite 'N' e aperte ENTER se NÃO """)
             break
         except:
             print("A data digitada não é válida, tente novamente")
-
-    job_concat = f"{date_vl}_JOB{job_num}_{job_name}"
+    client_alias = get_client_alias(selected_client_name)
+    job_concat = f"{date_vl}_JOB{job_num}_{client_alias}_{job_name}"
     dir_validate = input(f"O nome do job é {job_concat}, aperte 'N' se deseja recomeçar: ")
     if dir_validate.lower() == 'n':
         set_folder()
@@ -106,7 +117,6 @@ APERTE 'ENTER' SE SIM | ou digite 'N' e aperte ENTER se NÃO """)
     os.mkdir('out')
 
 def menu_set():
-    rename_alias()
     given_option = int(input("""
     O que gostaria de fazer?
     1. Criar uma pasta para um projeto
