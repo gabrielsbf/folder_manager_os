@@ -4,7 +4,28 @@ import datetime as dt
 from handle_json import *
 
 def prompt_clients(list_clients_b=True):
+    """
+    Displays a numbered list of clients and allows the user to select one.
+
+    Args:
+        list_clients_b (bool, optional): Determines whether the list of clients should be obtained from a specific directory
+            (default) or if a list of clients is provided directly. Defaults to True.
+
+    Returns:
+        dict: A dictionary mapping the selected index numbers to the names of the clients.
+
+    Example Usage:
+        # Displays a list of clients obtained from the default directory and allows the user to select one
+        prompt_clients()
+
+        # Displays a list of clients provided directly and allows the user to select one
+        clients_list = ['client1', 'client2', 'client3']
+        prompt_clients(list_clients_b=False)
+    """
     list_clients = os.listdir(path.PATTERN_PATH) if list_clients_b == True else list_clients_b 
+    if list_clients == []:
+        create_folder()
+        return prompt_clients()
     clients_dict ={list_clients.index(i) + 1 : i for i in list_clients} 
     clients_texted = '      \n+---+------------------------------------------------\n'.join(['| ' 
                                                             + str(list(clients_dict.keys())[i]) 
@@ -15,11 +36,15 @@ Selecione um cliente pelo número, na lista abaixo
 +---+------------------------------------------------
 {clients_texted}
 +---+------------------------------------------------
-    """)
-    if clients_texted == '':
-        return print('Não há pastas neste diretorio')
+    """)    
     return clients_dict
 
+def create_folder():
+    name = input('Digite o nome do cliente que deseja criar: ')
+    path_clients = os.path.join(path.PATTERN_PATH, name)
+    os.mkdir(path_clients)
+    print("Novo cliente Adicionado!")
+    
 def rename_alias(verify=True):
     alias = read_file("client_alias.json")
     list_clients = os.listdir(path.PATTERN_PATH)
