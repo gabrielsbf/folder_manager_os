@@ -91,6 +91,11 @@ def get_client_alias(client):
     else:
         rename_alias(False)
 
+def create_subfolders(folder_name: str):
+    arr_obj = folder_name.split('_')
+    os.mkdir('00_Doc')
+    os.makedirs('03_Video/00_Video_Bruto/' + arr_obj[0] + "_Canon01/")
+
 def set_folder():
     """
     This function assists in creating a directory structure to store files for a 
@@ -146,8 +151,8 @@ APERTE 'ENTER' SE SIM | ou digite 'N' e aperte ENTER se NÃO """)
     os.chdir(path.PATTERN_PATH + '/' + clients_dict.get((int(selected_client))))
     os.mkdir(job_concat)
     os.chdir(job_concat)
-    os.mkdir('in')
-    os.mkdir('out')
+    create_subfolders(job_concat)
+
 
 def menu_set():
     """
@@ -167,7 +172,7 @@ def menu_set():
         case 1:
             set_folder()
         case 2:
-            rename_alias()
+            rename_alias(False)
             menu_set()
         case 3:
             create_folder()
