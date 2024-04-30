@@ -14,7 +14,6 @@ def update_file(json_obj: list[dict] | dict, file_name: str, folder='./'):
 
 	if type(to_concat) == dict and type(json_obj) == dict:
 		for key, value in json_obj.items():
-			print(key, value)
 			to_concat.update({key:value})
 	elif type(to_concat) == list and type(json_obj) == list:
 		for arr in json_obj:
