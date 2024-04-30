@@ -93,14 +93,18 @@ def get_client_alias(client):
 
 def set_folder():
     """
-    Creates a new folder structure for a new client project.
+    This function assists in creating a directory structure to store files for a 
+    specific job of a particular client.
 
-    Lists available clients and allows the user to rename or create aliases for client folders if necessary.
-    Prompts the user to select the client for which to create a new project.
-    Prompts the user to enter the number and name of the new project, as well as confirming the request date.
-    Constructs the name of the new project folder based on the project number, client name, project name, and request date.
-    Prompts the user to validate the name of the new project folder or restart the process if necessary.
-    Creates the folder structure for the new project, including 'in' and 'out' subfolders.
+    The user is guided through a series of interactive prompts to select the client,
+    input job details, and confirm directory creation.
+
+    Returns:
+        None
+
+    Raises:
+        ValueError: If the entered date is not valid.
+
     """
     clients_dict = prompt_clients()
     rename_alias()
