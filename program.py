@@ -91,10 +91,32 @@ def get_client_alias(client):
     else:
         rename_alias(False)
 
+def create_multiple_sub(inner_folder: list, outer_folder: str):
+    for i in inner_folder:
+        inner_folder = os.path.join(outer_folder, i)
+        os.makedirs(inner_folder)
+
+
 def create_subfolders(folder_name: str):
     arr_obj = folder_name.split('_')
     os.mkdir('00_Doc')
-    os.makedirs('03_Video/00_Video_Bruto/' + arr_obj[0] + "_Canon01/")
+    os.mkdir('01_Referencia')
+    os.mkdir('02_Projeto')
+    create_multiple_sub(['01_Premiere', '02_DavinciResolve', '03_AfterEffects'], '02_Projeto')
+    os.mkdir('03_Video')
+    create_multiple_sub(['00_Video_Bruto', '01_Stock_Video', '02_VFX'], '03_Video')
+    create_multiple_sub([arr_obj[0] + '_Canon01/Proxy', arr_obj[0] + '_Drone01/Proxy', arr_obj[0] + '_Go_Pro01/Proxy' ], '03_Video/00_Video_Bruto/')
+    os.mkdir('04_Audio')
+    create_multiple_sub(['00_Sonora', '01_Loc', '02_Trilhas', '03_SFX', '04_Mix'], '04_Audio')
+    create_multiple_sub([arr_obj[0] + '_Audio01'], '04_Audio/00_Sonora/')
+    os.mkdir('05_Imagem')
+    os.mkdir('06_GC')
+    os.mkdir('07_Color_Render')
+    create_multiple_sub(['00_Davinci_IN', '01_Davinci_OUT'], '07_Color_Render')
+    os.mkdir('08_Export')
+    create_multiple_sub(['00_Video_OffLine', '01_Audio_para_Mix', '03_XML', '04_Legenda'], '08_Export')
+    create_multiple_sub(['00_Para_Premiere', '01_Para_Davinci'], '08_Export/03_XML')
+    os.mkdir('09_Entrega')
 
 def set_folder():
     """
