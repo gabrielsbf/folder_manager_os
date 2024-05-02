@@ -84,6 +84,19 @@ def rename_alias(verify=True):
         print('Apelido criado/alterado! Retornando ao menu principal.')
         
 def get_client_alias(client):
+    """
+    Gets the client's alias from a JSON file of aliases.
+
+    Args:
+        client (str): The name of the client for which the alias is desired.
+
+    Returns:
+        str or None: The client's alias if it exists in the JSON file of aliases. 
+                     Returns None if there is no alias for the client.
+
+    Raises:
+        FileNotFoundError: If the JSON file of aliases cannot be found.
+    """
     alias_file = read_file('client_alias.json')
     alias = alias_file.get(client)
     if alias != None:
@@ -92,12 +105,31 @@ def get_client_alias(client):
         rename_alias(False)
 
 def create_multiple_sub(inner_folder: list, outer_folder: str):
+    """
+    Creates folders within a given outer folder.
+
+    Parameters:
+    - inner_folder (list): List containing names of the folders to be created within the outer folder.
+    - outer_folder (str): Path of the outer folder where the inner folders will be created.
+
+    Returns:
+    No explicit return.
+    """
     for i in inner_folder:
         inner_folder = os.path.join(outer_folder, i)
         os.makedirs(inner_folder)
 
 
 def create_subfolders(folder_name: str):
+    """
+    Creates a standard folder structure.
+
+    Parameters:
+    - folder_name (str): Name of the project.
+
+    Returns:
+    No explicit return.
+    """
     arr_obj = folder_name.split('_')
     os.mkdir('00_Doc')
     os.mkdir('01_Referencia')
