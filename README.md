@@ -31,7 +31,7 @@ pip install -r requirements.txt
 ```
 
 
-#Pt
+# Pt
 # Gerenciador de Pastas os 
 
 O gerenciador de pastas é um programa com um menu integrado que apresenta três opções: criar clientes, adicionar ou alterar o apelido de um cliente registrado e criar a hierarquia de pastas para cada cliente inserido.
