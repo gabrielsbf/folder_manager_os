@@ -50,7 +50,6 @@ def create_folder():
     name = input('Digite o nome do cliente que deseja criar: ')
     path_clients = os.path.join(path.PATTERN_PATH, name)
     os.mkdir(path_clients)
-    print("Novo cliente Adicionado!")
     return prompt_clients()
 
 def rename_alias(verify=True):
@@ -219,17 +218,18 @@ def menu_set():
     given_option = int(input("""
     O que gostaria de fazer?
     1. Criar uma pasta para um projeto
-    2. Crie ou dê um apelido para uma pasta de um cliente
-    3. Criar um cliente                         
+    2. Criar um cliente
+    3. Crie ou dê um apelido para uma pasta de um cliente                         
     selecione o número correspondente: """))
     match given_option:
         case 1:
             set_folder()
         case 2:
-            rename_alias(False)
+            create_folder()
+            print("Novo cliente Adicionado! Retornando ao menu principal.")
             menu_set()
         case 3:
-            create_folder()
+            rename_alias(False)
             menu_set()
         case _:
             print("Não identifiquei a sua escolha, por favor escolha novamente. ")
@@ -239,7 +239,11 @@ if __name__ == "__main__":
     print("""
 -------------------BEM VINDO AO MENU-------------------
 PARA SAIR DO PROGRAMA A QUALQUER MOMENTO APERTE CTRL+C""")
-    try:
-        menu_set()
-    except KeyboardInterrupt as err:
-        print("\nSaindo do programa")
+    while True:
+        try:
+            menu_set()
+        except KeyboardInterrupt as err:
+            print("\nSaindo do programa")
+            break
+        except ValueError as err_num:
+            print("\nVALOR DIGITADO NÃO É VÁLIDO,RETORNANDO AO MENU PRINCIPAL\nPRESSIONE CTRL+C caso deseje encerrar o programa")
