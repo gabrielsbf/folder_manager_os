@@ -48,9 +48,12 @@ def create_folder():
     Returns to the main program menu.
     """
     name = input('Digite o nome do cliente que deseja criar: ')
-    path_clients = os.path.join(path.PATTERN_PATH, name)
-    os.mkdir(path_clients)
-    return prompt_clients()
+    try:
+        path_clients = os.path.join(path.PATTERN_PATH, name)
+        os.mkdir(path_clients)
+        print("\nNovo cliente Adicionado! Retornando ao menu principal.")
+    except Exception as e:
+        print(f"\nFalha ao criar a pasta pelo motivo abaixo:\n{e}\nEm caso de dúvida, procure a equipe de TI")
 
 def rename_alias(verify=True):
     """
@@ -78,6 +81,14 @@ def rename_alias(verify=True):
                 print(f"\nVocê selecionou o cliente : {clients_dict.get(int(selected_client))}")
                 break
         set_alias = input(f"digite abaixo qual apelido para as pastas desse cliente você deseja endereçar?\n")
+        while True:
+            confirmation = input(f"""Você escolheu o apelido '{set_alias}' para o cliente '{clients_dict.get(int(selected_client))}'
+tem certeza da sua escolha? Digite 'S' para Sim, e 'N' para Não >>> """)
+            if confirmation.upper() == 'S':
+                break
+            elif confirmation.upper() == 'N':
+                print("Apelido não alterado! Retornando ao menu principal")
+                return 0
         app_obj = {clients_dict.get(int(selected_client)) : set_alias}
         update_file(app_obj, 'client_alias.json')
         print('Apelido criado/alterado! Retornando ao menu principal.')
@@ -176,9 +187,19 @@ def set_folder():
             break
         else:
             print('Esse número não corresponde a nenhum cliente, tente novamente. ')
-        
-    job_num = input("\nInsira o número do job: ").replace(' ' , '')
-    job_name = input("\nInsira o nome do job: ").replace(' ' , '').lower()
+    while True:
+        try:    
+            job_num = int(input("\nInsira o número do job: ").replace(' ' , ''))
+            job_name = input("\nInsira o nome do job: ").replace(' ' , '').lower()
+            if len(job_name) == 0:
+                print("Você não deu um nome ao seu job")
+            else: break
+        except :
+            if KeyboardInterrupt:
+                print("saindo do Módulo")
+                return 0
+            else:            
+                print("Número de Job Inválido.")
     while True:
         choose_date = input(f"""
 o job foi solicitado na data de hoje({dt.datetime.strftime(dt.datetime.now(), "%d/%m/%Y")})?
@@ -220,13 +241,14 @@ def menu_set():
     1. Criar uma pasta para um projeto
     2. Criar um cliente
     3. Crie ou dê um apelido para uma pasta de um cliente                         
+    
     selecione o número correspondente: """))
     match given_option:
         case 1:
             set_folder()
         case 2:
             create_folder()
-            print("Novo cliente Adicionado! Retornando ao menu principal.")
+            print("Retornando ao MENU!")
             menu_set()
         case 3:
             rename_alias(False)
