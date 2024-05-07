@@ -11,7 +11,7 @@ def first_exec(config: ConfigParser):
     config.set("PATHS", "PATTERN_PATH", patthern_path.replace("\\", "/"))
     config.set("PATHS", "PROJECT_PATH", os.getcwd().replace("\\", "/"))
     
-    with open(cur_dir + "./config.ini", "w") as file:
+    with open(cur_dir + "/config.ini", "w") as file:
         config.write(file)
 
     
