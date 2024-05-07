@@ -2,6 +2,8 @@ import os
 import env as path
 import datetime as dt
 from handle_json import *
+from config_handle import *
+from configparser import ConfigParser
 
 def prompt_clients(list_clients_b=True):
     """
@@ -147,7 +149,7 @@ def create_subfolders(folder_name: str):
     create_multiple_sub(['01_Premiere', '02_DavinciResolve', '03_AfterEffects'], '02_Projeto')
     os.mkdir('03_Video')
     create_multiple_sub(['00_Video_Bruto', '01_Stock_Video', '02_VFX'], '03_Video')
-    create_multiple_sub([arr_obj[0] + '_Canon01/Proxy', arr_obj[0] + '_Drone01/Proxy', arr_obj[0] + '_Go_Pro01/Proxy' ], '03_Video/00_Video_Bruto/')
+    create_multiple_sub([arr_obj[0] + '_Canon01/Proxy', arr_obj[0] + '_Drone01/Proxy', arr_obj[0] + '_Red01/Proxy', arr_obj[0] + "_BM01/Proxy"], '03_Video/00_Video_Bruto/')
     os.mkdir('04_Audio')
     create_multiple_sub(['00_Sonora', '01_Loc', '02_Trilhas', '03_SFX', '04_Mix'], '04_Audio')
     create_multiple_sub([arr_obj[0] + '_Audio01'], '04_Audio/00_Sonora/')
@@ -160,6 +162,28 @@ def create_subfolders(folder_name: str):
     create_multiple_sub(['00_Para_Premiere', '01_Para_Davinci'], '08_Export/03_XML')
     os.mkdir('09_Entrega')
 
+def get_last_job(client_dir):
+    list_clients = os.listdir(client_dir)
+    print("\nABRINDO PROCESSO DE ESCOLHA DO NÚMERO DO JOB\n")
+    if list_clients == []:
+        print("A pasta não possui jobs, determine o número do primeiro job")
+        while True:
+            vl = input("O número do primeiro job será: ")
+            try : return int(vl)
+            except : print("Não foi possível converter o texto acima em número, tente novamente")
+    else:
+        jobs = []
+        for job in list_clients:
+            job_num = int(str(job).split("_")[1].replace("JOB", ""))
+            jobs.append(job_num)
+        last_job = max(jobs)
+        while True:
+            vl = input(f"Último Job >>> {last_job}, aperte ENTER se deseja que o próximo seja : {last_job + 1}, caso não, escreva o número do job >> ")
+            if vl == '': 
+                vl = last_job + 1
+            try : return int(vl)
+            except : print("Não foi possível converter o texto acima em número, tente novamente")
+    
 def set_folder():
     """
     This function assists in creating a directory structure to store files for a 
@@ -181,7 +205,7 @@ def set_folder():
     while True:
         selected_client = input("Selecione o número correspondente ao cliente desejado: ")
         selected_client_name = clients_dict.get(int(selected_client))
-
+        client_dir = path.PATTERN_PATH + '/' + selected_client_name
         if selected_client_name != None:
             print(f"\nVocê selecionou o cliente : {selected_client_name}")
             break
@@ -189,8 +213,8 @@ def set_folder():
             print('Esse número não corresponde a nenhum cliente, tente novamente. ')
     while True:
         try:    
-            job_num = int(input("\nInsira o número do job: ").replace(' ' , ''))
-            job_name = input("\nInsira o nome do job: ").replace(' ' , '').lower()
+            job_num = get_last_job(client_dir)
+            job_name = input("\nInsira o nome do job: ").title().replace(' ' , '')
             if len(job_name) == 0:
                 print("Você não deu um nome ao seu job")
             else: break
@@ -222,7 +246,7 @@ APERTE 'ENTER' SE SIM | ou digite 'N' e aperte ENTER se NÃO """)
     dir_validate = input(f"O nome do job é {job_concat}, aperte 'N' se deseja recomeçar: ")
     if dir_validate.lower() == 'n':
         set_folder()
-    os.chdir(path.PATTERN_PATH + '/' + clients_dict.get((int(selected_client))))
+    os.chdir(client_dir)
     os.mkdir(job_concat)
     os.chdir(job_concat)
     create_subfolders(job_concat)
@@ -258,6 +282,8 @@ def menu_set():
             menu_set()
 
 if __name__ == "__main__":
+
+    # print(client_folder, project_folder)
     print("""
 -------------------BEM VINDO AO MENU-------------------
 PARA SAIR DO PROGRAMA A QUALQUER MOMENTO APERTE CTRL+C""")
@@ -268,4 +294,4 @@ PARA SAIR DO PROGRAMA A QUALQUER MOMENTO APERTE CTRL+C""")
             print("\nSaindo do programa")
             break
         except ValueError as err_num:
-            print("\nVALOR DIGITADO NÃO É VÁLIDO,RETORNANDO AO MENU PRINCIPAL\nPRESSIONE CTRL+C caso deseje encerrar o programa")
+            print("\nVALOR DIGITADO NÃO É VÁLIDO,RETORNANDO AO MENU PRINCIPAL\n\nPRESSIONE CTRL+C caso deseje encerrar o programa")
