@@ -2,3 +2,5 @@ __pycache__/
 client_alias.json
 config.ini
 __pycache__
+*.spec
+build/
