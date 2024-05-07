@@ -172,7 +172,7 @@ def get_last_job(client_dir):
             try : return int(vl)
             except : print("Não foi possível converter o texto acima em número, tente novamente")
     else:
-        jobs = []
+        jobs = [0]
         for job in list_clients:
             try:
                 job_num = int(str(job).split("_")[1].replace("JOB", ""))
