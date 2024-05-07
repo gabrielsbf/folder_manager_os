@@ -174,8 +174,12 @@ def get_last_job(client_dir):
     else:
         jobs = []
         for job in list_clients:
-            job_num = int(str(job).split("_")[1].replace("JOB", ""))
-            jobs.append(job_num)
+            try:
+                job_num = int(str(job).split("_")[1].replace("JOB", ""))
+                jobs.append(job_num)
+            except:
+                print(f"warning - pasta: {job} não segue modelo especificado")
+                pass
         last_job = max(jobs)
         while True:
             vl = input(f"Último Job >>> {last_job}, aperte ENTER se deseja que o próximo seja : {last_job + 1}, caso não, escreva o número do job >> ")
