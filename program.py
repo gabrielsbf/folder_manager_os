@@ -246,7 +246,8 @@ APERTE 'ENTER' SE SIM | ou digite 'N' e aperte ENTER se NÃO """)
         except:
             print("A data digitada não é válida, tente novamente")
     client_alias = get_client_alias(selected_client_name)
-    job_concat = f"{date_vl}_JOB{job_num}_{client_alias}_{job_name}"
+    zero_repeat = '0' * (4 - len(str(job_num)))
+    job_concat = f"{date_vl}_JOB{zero_repeat}{job_num}_{client_alias}_{job_name}"
     dir_validate = input(f"O nome do job é {job_concat}, aperte 'N' se deseja recomeçar: ")
     if dir_validate.lower() == 'n':
         set_folder()

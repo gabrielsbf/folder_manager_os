@@ -5,3 +5,5 @@ __pycache__
 *.spec
 build/
 .DS_Store
+/Testes/
+teste.py
