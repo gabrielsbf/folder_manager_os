@@ -209,12 +209,18 @@ def set_folder():
     while True:
         selected_client = input("Selecione o número correspondente ao cliente desejado: ")
         selected_client_name = clients_dict.get(int(selected_client))
-        client_dir = path.PATTERN_PATH + '/' + selected_client_name
+        year = str(dt.datetime.now().year)
+        client_dir = path.PATTERN_PATH + '/' + selected_client_name + '/'+ year
         if selected_client_name != None:
             print(f"\nVocê selecionou o cliente : {selected_client_name}")
             break
         else:
             print('Esse número não corresponde a nenhum cliente, tente novamente. ')
+
+    if not os.path.exists(client_dir):
+        print(f"A pasta {year} não existe, criando pasta {year}...")
+        os.mkdir(client_dir)
+
     while True:
         try:    
             job_num = get_last_job(client_dir)
@@ -255,6 +261,7 @@ APERTE 'ENTER' SE SIM | ou digite 'N' e aperte ENTER se NÃO """)
     os.mkdir(job_concat)
     os.chdir(job_concat)
     create_subfolders(job_concat)
+
 
 
 def menu_set():
