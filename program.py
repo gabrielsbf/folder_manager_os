@@ -1,9 +1,14 @@
 import os
 import env as path
+from utils.env_p import *
 import datetime as dt
 from handle_json import *
 from config_handle import *
-from configparser import ConfigParser
+from components.Sheets_Manager.module.sheets_manager import Sheets_Manager
+
+
+url = "https://docs.google.com/spreadsheets/d/1pcN-ulGezzkjt6bWVxb0vS506FV-IvVbssjXZgVJLys/edit?gid=0#gid=0"
+sheets = Sheets_Manager(url, SERVICE_CRED)
 
 def prompt_clients(list_clients_b=True):
     """
@@ -188,7 +193,7 @@ def get_last_job(client_dir):
             try : return int(vl)
             except : print("Não foi possível converter o texto acima em número, tente novamente")
     
-def set_folder():
+def set_folder(show_jobs):
     """
     This function assists in creating a directory structure to store files for a 
     specific job of a particular client.
@@ -203,65 +208,82 @@ def set_folder():
         ValueError: If the entered date is not valid.
 
     """
-    clients_dict = prompt_clients()
-    rename_alias()
-    
-    while True:
-        selected_client = input("Selecione o número correspondente ao cliente desejado: ")
-        selected_client_name = clients_dict.get(int(selected_client))
-        year = str(dt.datetime.now().year)
-        client_dir = path.PATTERN_PATH + '/' + selected_client_name + '/'+ year
-        if selected_client_name != None:
-            print(f"\nVocê selecionou o cliente : {selected_client_name}")
-            break
-        else:
-            print('Esse número não corresponde a nenhum cliente, tente novamente. ')
+    select = input("Deseja copiar um JOB existente? (S/N): \n").upper()
+    if show_jobs != [] and select == 'S':
+        selected = int(input("Digite o número do JOB que deseja copiar: \n"))
+        for job in show_jobs:
+            if selected == int(job.split('_')[1].lstrip("JOB")):
+                job_concat = str(job).replace('-', '_')
+                client_dir = path.PATTERN_PATH       
+    else:
+        clients_dict = prompt_clients()
+        rename_alias()
+        
+        while True:
+            selected_client = input("Selecione o número correspondente ao cliente desejado: ")
+            selected_client_name = clients_dict.get(int(selected_client))
+            year = str(dt.datetime.now().year)
+            client_dir = path.PATTERN_PATH + '/' + selected_client_name + '/'+ year
+            if selected_client_name != None:
+                print(f"\nVocê selecionou o cliente : {selected_client_name}")
+                break
+            else:
+                print('Esse número não corresponde a nenhum cliente, tente novamente. ')
 
-    if not os.path.exists(client_dir):
-        print(f"A pasta {year} não existe, criando pasta {year}...")
-        os.mkdir(client_dir)
+        if not os.path.exists(client_dir):
+            print(f"A pasta {year} não existe, criando pasta {year}...")
+            os.mkdir(client_dir)
 
-    while True:
-        try:    
-            job_num = get_last_job(client_dir)
-            job_name = input("\nInsira o nome do job: ").title().replace(' ' , '')
-            if len(job_name) == 0:
-                print("Você não deu um nome ao seu job")
-            else: break
-        except :
-            if KeyboardInterrupt:
-                print("saindo do Módulo")
-                return 0
-            else:            
-                print("Número de Job Inválido.")
-    while True:
-        choose_date = input(f"""
-o job foi solicitado na data de hoje({dt.datetime.strftime(dt.datetime.now(), "%d/%m/%Y")})?
+        while True:
+            try:    
+                job_num = get_last_job(client_dir)
+                job_name = input("\nInsira o nome do job: ").title().replace(' ' , '')
+                if len(job_name) == 0:
+                    print("Você não deu um nome ao seu job")
+                else: break
+            except :
+                if KeyboardInterrupt:
+                    print("saindo do Módulo")
+                    return 0
+                else:            
+                    print("Número de Job Inválido.")
+        while True:
+            choose_date = input(f"""
+    o job foi solicitado na data de hoje({dt.datetime.strftime(dt.datetime.now(), "%d/%m/%Y")})?
 
-APERTE 'ENTER' SE SIM | ou digite 'N' e aperte ENTER se NÃO """)
-        if choose_date == '':
-            date_vl = dt.datetime.strftime(dt.datetime.now(), "%y%m%d")
-            break
-        elif choose_date.lower() == 'n':
-            day_in = input("\nDigite o dia desejado: ")
-            month_in = input("\nDigite o mês desejado: ")
-            year_in = input("\nDigite o ano desejado: ")
-        try: 
-            date_vl = dt.datetime(int(year_in), int(month_in), int(day_in)).strftime("%y%m%d")
-            break
-        except:
-            print("A data digitada não é válida, tente novamente")
-    client_alias = get_client_alias(selected_client_name)
-    zero_repeat = '0' * (4 - len(str(job_num)))
-    job_concat = f"{date_vl}_JOB{zero_repeat}{job_num}_{client_alias}_{job_name}"
-    dir_validate = input(f"O nome do job é {job_concat}, aperte 'N' se deseja recomeçar: ")
-    if dir_validate.lower() == 'n':
-        set_folder()
+    APERTE 'ENTER' SE SIM | ou digite 'N' e aperte ENTER se NÃO """)
+            if choose_date == '':
+                date_vl = dt.datetime.strftime(dt.datetime.now(), "%y%m%d")
+                break
+            elif choose_date.lower() == 'n':
+                day_in = input("\nDigite o dia desejado: ")
+                month_in = input("\nDigite o mês desejado: ")
+                year_in = input("\nDigite o ano desejado: ")
+            try: 
+                date_vl = dt.datetime(int(year_in), int(month_in), int(day_in)).strftime("%y%m%d")
+                break
+            except:
+                print("A data digitada não é válida, tente novamente")
+        client_alias = get_client_alias(selected_client_name)
+        zero_repeat = '0' * (4 - len(str(job_num)))
+        job_concat = f"{date_vl}_JOB{zero_repeat}{job_num}_{client_alias}_{job_name}"
+        dir_validate = input(f"O nome do job é {job_concat}, aperte 'N' se deseja recomeçar: ")
+        if dir_validate.lower() == 'n':
+            set_folder(get_sheets(sheets, 11))
     os.chdir(client_dir)
     os.mkdir(job_concat)
     os.chdir(job_concat)
     create_subfolders(job_concat)
+    print(f'O diretório {job_concat} foi criado com sucesso! Retornando ao menu principal.')
 
+
+def get_sheets(sheets, collumn_number):
+    sheet = sheets.access_sheet('tabela')
+    jobs_list = []
+    for job in sheet.col_values(collumn_number):
+        jobs_list.append(job)
+    del jobs_list[:2]    
+    return jobs_list
 
 
 def menu_set():
@@ -281,7 +303,7 @@ def menu_set():
     selecione o número correspondente: """))
     match given_option:
         case 1:
-            set_folder()
+            set_folder(get_sheets(sheets, 11))
         case 2:
             create_folder()
             print("Retornando ao MENU!")
@@ -293,6 +315,8 @@ def menu_set():
             print("Não identifiquei a sua escolha, por favor escolha novamente. ")
             menu_set()
 
+
+# print(get_sheets(sheets, 2))
 if __name__ == "__main__":
 
     # print(client_folder, project_folder)
