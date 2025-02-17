@@ -1,4 +1,6 @@
 import os
+from pathlib import Path
+import re
 import env as path
 from utils.env_p import *
 import datetime as dt
@@ -10,7 +12,7 @@ from components.Sheets_Manager.module.sheets_manager import Sheets_Manager
 url = "https://docs.google.com/spreadsheets/d/1pcN-ulGezzkjt6bWVxb0vS506FV-IvVbssjXZgVJLys/edit?gid=0#gid=0"
 sheets = Sheets_Manager(url, SERVICE_CRED)
 
-def prompt_clients(list_clients_b=True):
+def prompt_clients(list_clients_b: bool|list =True):
     """
     Displays a numbered list of clients and allows the user to select one.
 
@@ -29,9 +31,13 @@ def prompt_clients(list_clients_b=True):
         clients_list = ['client1', 'client2', 'client3']
         prompt_clients(list_clients_b=False)
     """
-    list_clients = os.listdir(path.PATTERN_PATH) if list_clients_b == True else list_clients_b 
-    if list_clients == []:
-        return create_folder()
+    if list_clients_b != True:
+        [os.makedirs(path.PATTERN_PATH + client, exist_ok=True) for client in list_clients_b]
+    list_clients = os.listdir(path.PATTERN_PATH)
+    while len(list_clients) == 0:
+        create_folder()
+        list_clients = os.listdir(path.PATTERN_PATH)
+
     clients_dict ={list_clients.index(i) + 1 : i for i in list_clients} 
     clients_texted = '      \n+---+------------------------------------------------\n'.join(['| ' 
                                                             + str(list(clients_dict.keys())[i]) 
@@ -213,8 +219,14 @@ def set_folder(show_jobs):
         selected = int(input("Digite o número do JOB que deseja copiar: \n"))
         for job in show_jobs:
             if selected == int(job.split('_')[1].lstrip("JOB")):
-                job_concat = str(job).replace('-', '_')
-                client_dir = path.PATTERN_PATH       
+                job_concat = str(job).translate(str.maketrans({"-": "_", " ": ""}))
+                job_concat= re.sub(r"[^\w]", "", job_concat)
+                client_name = job_concat.split('_')[2].upper()
+                client_dir = path.PATTERN_PATH
+                clients_dict = prompt_clients([client_name])            
+                client_alias = get_client_alias(client_name)
+                year = str(dt.datetime.now().year)
+
     else:
         clients_dict = prompt_clients()
         rename_alias()
@@ -270,11 +282,12 @@ def set_folder(show_jobs):
         dir_validate = input(f"O nome do job é {job_concat}, aperte 'N' se deseja recomeçar: ")
         if dir_validate.lower() == 'n':
             set_folder(get_sheets(sheets, 11))
-    os.chdir(client_dir)
-    os.mkdir(job_concat)
-    os.chdir(job_concat)
+    final_path = Path().joinpath(client_dir, client_name,year, job_concat)
+    os.makedirs(final_path, exist_ok=True)
+    os.chdir(final_path)
     create_subfolders(job_concat)
-    print(f'O diretório {job_concat} foi criado com sucesso! Retornando ao menu principal.')
+    print("cliente is", clients_dict)
+    print(f'O diretório {final_path} foi criado com sucesso! Retornando ao menu principal.')
 
 
 def get_sheets(sheets, collumn_number):
@@ -316,7 +329,7 @@ def menu_set():
             menu_set()
 
 
-# print(get_sheets(sheets, 2))
+# print(get_sheets(sheets, 11))
 if __name__ == "__main__":
 
     # print(client_folder, project_folder)
